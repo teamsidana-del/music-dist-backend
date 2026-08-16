@@ -47,3 +47,15 @@ router.post('/:trackId/audio', requireAuth, upload.single('file'), async (req, r
 });
 
 module.exports = router;
+router.get('/', requireAuth, async (req, res) => {
+  const { release_id } = req.query;
+  try {
+    const result = await pool.query(
+      'SELECT * FROM tracks WHERE release_id = $1 ORDER BY track_number ASC',
+      [release_id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
